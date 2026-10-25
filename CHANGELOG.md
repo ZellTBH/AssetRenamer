@@ -5,6 +5,15 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- The README is rewritten and is now the only documentation of the package. Every fact in it is checked against the code: default prefixes, convention examples, preview statuses, the Update button and network access.
+- `documentationUrl` points to the README, so the Package Manager "Documentation" link opens it.
+
+### Removed
+- The PDF quick guide (`Documentation~/AssetRenamer.pdf`): it showed the old interface and the old URL, and wrongly claimed the tool made no network access. The unused banner and icon art (`Documentation~/art/`) is removed with it.
+
 ## [0.5.2] - 2026-10-25
 
 ### Changed
