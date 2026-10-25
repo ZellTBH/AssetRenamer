@@ -5,6 +5,29 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-10-25
+
+### Added
+- EditMode test suite (106 tests): characterization of the tokenizer, formatter, normalizer, redundant type word filter and engine plans, plus the prefix table helper. Run them from the Test Runner once the package is listed under `"testables"` in the host manifest.
+- Status pill on every preview row (colored dot plus status word). A message line appears only for Collision and Invalid.
+- The drop zone lights up while assets are dragged over it.
+- `Documentation~/wcag_check.py`: checks the contrast of every color pair used by the stylesheet, composing translucent colors over the background they sit on.
+
+### Changed
+- Breaking Frame visual language, aligned on the other forges: header with the Breaking Frame logo and the tool title, toolbar (Add selection, Clear, Revert, Apply), translucent rounded sections (Convention, Prefix, Transformations, Preview), footer with counts, version and the Update badge.
+- The window layout is a UXML file. Options are built once and only the preview refreshes on change, so text fields keep focus and the scroll position stays put.
+- Colors come from a single token block in the stylesheet, with one status palette: Collision is now yellow and Invalid red (the code and the stylesheet used to disagree and swapped them).
+- Contrast meets WCAG 2.2 AA: no blue text below 4.5:1, a visible frame on every input field and checkbox, minimum text size 11px.
+- Apply, Clear and Revert are disabled when there is nothing to do; Revert stays visible.
+- "Create Default Table" is now "Create or Load Table".
+- The stylesheet moved to `Editor/Resources`.
+
+### Fixed
+- "Create Default Table" no longer writes over an existing asset at `Assets/AssetTypePrefixTable.asset`. Before, an existing prefix table lost all its custom rules (reset to the defaults), and an asset of another type at that path was turned into a prefix table, silently redirecting every reference to it. The button now loads the existing table, and logs an error without touching anything when another asset type occupies the path.
+
+### Removed
+- Embedded base64 banner art (`EmbeddedArt.cs`, about 1.78 MB).
+
 ## [0.4.0] - 2026-06-06
 
 ### Added
