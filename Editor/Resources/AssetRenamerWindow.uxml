@@ -1,0 +1,71 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="ar-root" class="ar-root">
+        <ui:VisualElement name="ar-header" class="ar-header">
+            <ui:VisualElement name="ar-header-left" class="ar-header-left">
+                <ui:Image name="ar-logo" class="ar-logo" />
+                <ui:Label name="ar-title" class="ar-title" text="Asset Renamer" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="ar-toolbar" class="ar-toolbar">
+            <ui:Button name="ar-add-selection" class="ar-button" text="Add selection" />
+            <ui:Button name="ar-clear" class="ar-button" text="Clear" />
+            <ui:Button name="ar-revert" class="ar-button" text="Revert" />
+            <ui:VisualElement class="ar-spacer" />
+            <ui:Button name="ar-apply" class="ar-button ar-button--primary" text="Apply" />
+        </ui:VisualElement>
+        <ui:ScrollView name="ar-body" class="ar-body">
+            <ui:VisualElement name="ar-convention" class="ar-group">
+                <ui:Label class="ar-group-title" text="CONVENTION" />
+                <ui:VisualElement name="ar-convention-row" class="ar-field-row">
+                    <ui:Button name="ar-help-button" class="ar-help-button" text="?" />
+                </ui:VisualElement>
+                <ui:VisualElement name="ar-help-panel" class="ar-help-panel ar-hidden" />
+                <ui:VisualElement name="ar-number-slot" />
+                <ui:Toggle name="ar-normalize" class="ar-toggle" text="Normalize messy names" />
+            </ui:VisualElement>
+            <ui:VisualElement name="ar-prefix" class="ar-group">
+                <ui:Label class="ar-group-title" text="PREFIX" />
+                <ui:Toggle name="ar-apply-prefix" class="ar-toggle" text="Apply type prefix" />
+                <ui:Toggle name="ar-strip-redundant" class="ar-toggle" text="Strip redundant type words" />
+                <ui:VisualElement name="ar-table-slot" />
+                <ui:Button name="ar-reset-table" class="ar-button" text="Reset table to defaults" />
+                <ui:VisualElement name="ar-missing-table" class="ar-hidden">
+                    <ui:Label class="ar-warning" text="No Type Prefix Table assigned. Create or load one to enable prefixes." />
+                    <ui:Button name="ar-create-table" class="ar-button" text="Create or Load Table" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="ar-transformations" class="ar-group">
+                <ui:Foldout name="ar-transform-foldout" class="ar-advanced" text="TRANSFORMATIONS" value="false">
+                    <ui:TextField name="ar-find" label="Find" />
+                    <ui:TextField name="ar-replace" label="Replace" />
+                    <ui:TextField name="ar-custom-prefix" label="Custom prefix" />
+                    <ui:TextField name="ar-custom-suffix" label="Custom suffix" />
+                </ui:Foldout>
+            </ui:VisualElement>
+            <ui:VisualElement name="ar-preview" class="ar-preview">
+                <ui:VisualElement name="ar-dropzone" class="ar-dropzone">
+                    <ui:Label class="ar-dropzone-label" text="Drag assets here" />
+                    <ui:Label class="ar-dropzone-types" text="textures, models, prefabs, audio, materials" />
+                </ui:VisualElement>
+                <ui:VisualElement class="ar-preview-head">
+                    <ui:Label class="ar-preview-title" text="PREVIEW" />
+                    <ui:Label name="ar-badge" class="ar-badge" text="0" />
+                    <ui:VisualElement class="ar-spacer" />
+                    <ui:Toggle name="ar-hide-unchanged" class="ar-toggle" text="Hide unchanged in preview" />
+                </ui:VisualElement>
+                <ui:Label name="ar-preview-empty" class="ar-preview-empty" text="Drop assets above to see the proposed names." />
+                <ui:VisualElement name="ar-preview-list" />
+            </ui:VisualElement>
+        </ui:ScrollView>
+        <ui:VisualElement name="ar-footer" class="ar-footer">
+            <ui:VisualElement class="ar-footer-row">
+                <ui:Label name="ar-counts" class="ar-counts" />
+                <ui:Label name="ar-counts-issues" class="ar-counts" />
+                <ui:VisualElement class="ar-spacer" />
+                <ui:Label name="ar-version" class="ar-version-label" />
+                <ui:Button name="ar-update" class="ar-button ar-button--update ar-hidden" />
+            </ui:VisualElement>
+            <ui:Label name="ar-result" class="ar-result ar-hidden" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

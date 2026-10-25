@@ -1,15 +1,14 @@
-/* Theme Breaking Frame de la fenetre Asset Renamer, transpose de BreakingFrameTheme.md.
-   Flat et anguleux : rayon 0, pas d'ombre, surfaces opaques, separation par bordures.
-   Les tokens sont declares UNE fois, ici, sur .ar-root et non sur :root (qui peut ne pas
-   matcher la racine d'une EditorWindow) ; les descendants en heritent. Aucune couleur en dur
-   ailleurs dans ce fichier ni dans le C#. */
+/* Theme de la fenetre Asset Renamer, aligne sur le langage visuel des forges Breaking Frame
+   (Balance Forge) : surfaces vitrees translucides, arrondis, boutons sans contour sur fond vitre,
+   primaire accent. La palette vient de BreakingFrameTheme.md ; WCAG 2.2 AA prime sur la forge.
+   Tous les tokens sont declares UNE fois, ici, sur .ar-root et non sur :root (qui peut ne pas
+   matcher la racine d'une EditorWindow) ; les descendants en heritent. Aucune couleur ni aucun
+   rayon en dur ailleurs dans ce fichier ni dans le C#. */
 
 /* ============ TOKENS ============ */
 .ar-root {
+    /* Palette BreakingFrameTheme.md */
     --ar-bg: #0A0A0A;
-    --ar-surface: #141414;
-    --ar-surface-2: #1A1A1A;
-    --ar-border: #2E2E2E;
     --ar-border-strong: #6E6E6E;
     --ar-accent: #0047FF;
     --ar-accent-hover: #1E5AFF;
@@ -17,65 +16,118 @@
     --ar-link: #5C90FF;
     --ar-success: #3ECF8E;
     --ar-warning: #E8B23A;
-    --ar-error: #C42B1C;
-    --ar-error-text: #E55648;
+    --ar-error-text: #E96F63;
     --ar-on-accent: #FFFFFF;
     --ar-text: #E8E8E8;
     --ar-text-muted: #A8A8A8;
-    --ar-text-faint: #555555;
+
+    /* Verre des forges : blanc a faible alpha, alphas repris de Balance Forge */
+    --ar-transparent: rgba(0, 0, 0, 0);
+    --ar-glass-1: rgba(255, 255, 255, 0.03);
+    --ar-glass-2: rgba(255, 255, 255, 0.04);
+    --ar-glass-3: rgba(255, 255, 255, 0.06);
+    --ar-glass-border: rgba(255, 255, 255, 0.06);
+    --ar-accent-glass: rgba(0, 71, 255, 0.35);
+    --ar-accent-85: rgba(0, 71, 255, 0.85);
+    --ar-text-disabled: rgba(255, 255, 255, 0.45);
+
+    /* Arrondis de Balance Forge */
+    --ar-radius-section: 12px;
+    --ar-radius-list: 10px;
+    --ar-radius-control: 8px;
+    --ar-radius-pill: 6px;
+    --ar-radius-field: 3px;
+    --ar-radius-dot: 3px;
 }
 
 /* ============ RACINE / MISE EN PAGE ============ */
+/* Disposition de Balance Forge : racine a 12px de marge, header, barre d'outils, corps
+   defilant, pied de page. */
 .ar-root {
     flex-grow: 1;
-    min-height: 0;
-    padding: 0;
+    padding: 12px;
     background-color: var(--ar-bg);
     color: var(--ar-text);
 }
 .ar-root Label {
     white-space: normal;
 }
-.ar-scroll {
+.ar-root .ar-hidden {
+    display: none;
+}
+.ar-spacer {
     flex-grow: 1;
-    min-height: 0;
-}
-.ar-content {
-    padding: 12px;
-}
-.ar-panel {
-    flex-shrink: 0;
-    margin-bottom: 10px;
 }
 
-/* ============ BANNIERE ============ */
-.ar-banner {
-    flex-shrink: 0;
-    width: 100%;
-    margin-bottom: 14px;
-}
-
-/* ============ GROUPES (FORMAT / CLEANUP / PREFIXES) ============ */
-.ar-group {
-    flex-shrink: 0;
-    margin-bottom: 16px;
-    padding: 16px 18px;
-    background-color: var(--ar-surface);
-    border-width: 1px;
-    border-color: var(--ar-border);
-    border-radius: 0;
-}
-.ar-group-head {
+/* ============ HEADER (structure Balance Forge) ============ */
+.ar-header {
     flex-direction: row;
     align-items: center;
-    margin-bottom: 7px;
+    justify-content: space-between;
+    padding: 0px 14px; /* padding vertical nul : le logo donne la hauteur */
+    margin-bottom: 8px;
+    background-color: var(--ar-glass-2);
+    border-radius: var(--ar-radius-section);
+    border-width: 1px;
+    border-color: var(--ar-glass-border);
+    flex-shrink: 0;
+}
+.ar-header-left {
+    flex-direction: row;
+    align-items: center;
+}
+.ar-logo {
+    width: 90px;
+    height: 90px;
+    margin-right: 12px;
+}
+.ar-title {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: var(--ar-text);
 }
 
-/* Titres de section : majuscules espacees. Le bleu accent echoue en texte (2.9:1 sur surface) :
-   le texte bleu passe toujours par --ar-link. 11px minimum pour tout texte. */
+/* ============ BARRE D'OUTILS (structure Balance Forge) ============ */
+.ar-toolbar {
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    background-color: var(--ar-glass-2);
+    border-radius: var(--ar-radius-section);
+    border-width: 1px;
+    border-color: var(--ar-glass-border);
+    flex-shrink: 0;
+}
+.ar-toolbar .ar-button {
+    min-width: 90px;
+    margin: 0 6px 0 0;
+}
+.ar-toolbar .ar-button--primary {
+    margin-right: 0;
+}
+
+/* ============ CORPS ============ */
+.ar-body {
+    flex-grow: 1;
+}
+
+/* ============ SECTIONS (CONVENTION / PREFIX / TRANSFORMATIONS) ============ */
+.ar-group {
+    flex-shrink: 0;
+    margin-bottom: 8px;
+    padding: 10px 14px;
+    background-color: var(--ar-glass-2);
+    border-width: 1px;
+    border-color: var(--ar-glass-border);
+    border-radius: var(--ar-radius-section);
+}
+
+/* Titres de section : majuscules espacees. Le bleu accent echoue en texte : le texte bleu
+   passe toujours par --ar-link. 11px minimum pour tout texte. */
 .ar-group-title,
-.ar-section-title,
-.ar-preview-title {
+.ar-preview-title,
+.ar-advanced .unity-foldout__text {
     -unity-font-style: bold;
     font-size: 11px;
     letter-spacing: 1.5px;
@@ -83,16 +135,16 @@
     margin-top: 0;
     margin-right: 8px;
 }
-.ar-section-title {
-    margin-bottom: 6px;
+.ar-group-title {
+    margin-bottom: 8px;
 }
 
 /* Unity ne compte pas le letter-spacing dans la mesure de largeur : avec le white-space normal
    de .ar-root Label, plus specifique qu'une classe seule, les titres se coupaient ("FORMA / T").
    Deux classes battent classe + type : cette regle l'emporte sur .ar-root Label. */
 .ar-root .ar-group-title,
-.ar-root .ar-section-title,
-.ar-root .ar-preview-title {
+.ar-root .ar-preview-title,
+.ar-root .ar-advanced .unity-foldout__text {
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -105,18 +157,22 @@
     color: var(--ar-text-muted);
     font-size: 12px;
 }
+
+/* Seuls les champs a saisie (texte, liste, objet) recoivent un cadre. La regle generique
+   .unity-base-field__input attrapait aussi le toggle du foldout, d'ou le contour parasite sur
+   l'en-tete TRANSFORMATIONS. Cadre border-strong : un champ vide reste identifiable (>= 3:1). */
+.ar-root .unity-base-text-field__input,
 .ar-root .unity-base-popup-field__input,
-.ar-root .unity-object-field__input,
-.ar-root .unity-base-field__input {
+.ar-root .unity-object-field__input {
     background-color: var(--ar-bg);
     border-width: 1px;
     border-color: var(--ar-border-strong);
-    border-radius: 0;
+    border-radius: var(--ar-radius-field);
     color: var(--ar-text);
 }
-/* Focus : accent-hover tient 3.7:1 contre le fond du champ et 3.5:1 contre la surface du
-   groupe, la ou l'accent pur tombe a 2.9:1. Il reste dans la famille du bleu electric. */
-.ar-root .unity-base-field:focus:enabled > .unity-base-field__input,
+
+/* Focus : accent-hover tient >= 3:1 contre le fond du champ et contre la section vitree. */
+.ar-root .unity-base-field:focus:enabled > .unity-base-text-field__input,
 .ar-root .unity-base-field:focus:enabled > .unity-base-popup-field__input,
 .ar-root .unity-base-field:focus:enabled > .unity-object-field__input {
     border-color: var(--ar-accent-hover);
@@ -124,14 +180,14 @@
 .ar-field-row {
     flex-direction: row;
     align-items: center;
-    margin-bottom: 7px;
+    margin-bottom: 6px;
 }
 .ar-field-grow {
     flex-grow: 1;
 }
 .ar-group .unity-base-popup-field,
 .ar-group .unity-object-field {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 /* ============ BOUTON D'AIDE "?" ============ */
@@ -140,42 +196,42 @@
     height: 22px;
     flex-shrink: 0;
     margin-left: 6px;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 1px;
-    border-color: var(--ar-border-strong);
-    border-radius: 0;
-    color: var(--ar-text-muted);
+    padding: 0;
+    background-color: var(--ar-glass-3);
+    border-width: 0;
+    border-radius: var(--ar-radius-pill);
+    color: var(--ar-text);
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
 .ar-help-button:hover {
-    border-color: var(--ar-link);
-    color: var(--ar-link);
+    background-color: var(--ar-accent-glass);
 }
 
 /* ============ PANNEAU D'AIDE ============ */
 .ar-help-panel {
-    padding: 8px;
-    margin-bottom: 10px;
-    background-color: var(--ar-bg);
+    padding: 6px;
+    margin-bottom: 8px;
+    background-color: var(--ar-glass-1);
     border-width: 1px;
-    border-color: var(--ar-border);
-    border-radius: 0;
+    border-color: var(--ar-glass-border);
+    border-radius: var(--ar-radius-list);
 }
 .ar-help-row {
     flex-direction: row;
     justify-content: space-between;
-    padding: 3px 4px;
-    border-left-width: 2px;
-    border-left-color: rgba(0, 0, 0, 0);
+    padding: 3px 6px;
+    border-radius: var(--ar-radius-pill);
 }
 .ar-help-row--active {
-    background-color: var(--ar-surface-2);
-    border-left-color: var(--ar-link);
+    background-color: var(--ar-accent-glass);
 }
 .ar-help-name {
     color: var(--ar-text-muted);
     font-size: 12px;
+}
+.ar-help-row--active .ar-help-name {
+    color: var(--ar-text);
 }
 .ar-help-example {
     color: var(--ar-text);
@@ -185,7 +241,7 @@
 
 /* ============ TOGGLES ============ */
 .ar-toggle {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 .ar-toggle .unity-base-field__label {
     min-width: 0;
@@ -193,7 +249,7 @@
 }
 .ar-toggle .unity-toggle__input {
     border-width: 0;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: var(--ar-transparent);
 }
 .ar-toggle .unity-toggle__label,
 .ar-toggle .unity-toggle__text {
@@ -203,82 +259,85 @@
 .ar-toggle .unity-toggle__text {
     margin-left: 6px;
 }
+
+/* Cadre border-strong (>= 3:1 contre le verre), conserve une fois coche : le fond accent seul ne
+   suffit pas, la coche blanche porte l'etat. */
 .ar-toggle .unity-toggle__checkmark {
     width: 18px;
     height: 18px;
     border-width: 1px;
     border-color: var(--ar-border-strong);
-    border-radius: 0;
+    border-radius: var(--ar-radius-field);
     background-color: var(--ar-bg);
     -unity-background-image-tint-color: var(--ar-on-accent);
 }
-/* Le contour reste border-strong une fois coche : le fond accent seul ne tient que 2.9:1
-   contre la surface, la coche blanche porte l'etat. */
 .ar-toggle:checked .unity-toggle__checkmark {
     background-color: var(--ar-accent);
 }
 
-/* ============ BOUTONS ============ */
-/* Secondaire par defaut : transparent, contour, texte attenue ; le bleu lien au survol. */
+/* ============ BOUTONS (style Balance Forge) ============ */
+/* Secondaire : verre sans contour, survol bleu translucide. Le texte suffit a identifier le
+   bouton (WCAG 1.4.11), il tient >= 4.5:1 sur chaque etat. */
 .ar-button {
-    padding: 6px 10px;
-    margin-bottom: 8px;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 1px;
-    border-color: var(--ar-border-strong);
-    border-radius: 0;
-    color: var(--ar-text-muted);
-    -unity-font-style: bold;
+    padding: 6px 12px;
+    margin-bottom: 6px;
+    background-color: var(--ar-glass-3);
+    border-width: 0;
+    border-radius: var(--ar-radius-control);
+    color: var(--ar-text);
 }
 .ar-button:hover {
-    border-color: var(--ar-link);
-    color: var(--ar-link);
+    background-color: var(--ar-accent-glass);
 }
 .ar-button:active {
-    background-color: var(--ar-surface-2);
+    background-color: var(--ar-accent-85);
+    color: var(--ar-on-accent);
 }
 
-/* Primaire : fond accent plein. Texte blanc pur : --ar-text tombe a 4.3:1 sur accent-hover. */
+/* Primaire : bleu accent a 0.85, plein au survol (Save de Balance Forge). */
 .ar-button--primary {
-    background-color: var(--ar-accent);
-    border-color: var(--ar-accent);
+    background-color: var(--ar-accent-85);
     color: var(--ar-on-accent);
 }
-.ar-button--primary:hover {
-    background-color: var(--ar-accent-hover);
-    border-color: var(--ar-accent-hover);
-    color: var(--ar-on-accent);
-}
+.ar-button--primary:hover,
 .ar-button--primary:active {
     background-color: var(--ar-accent);
+    color: var(--ar-on-accent);
 }
 
 /* Update available : seul usage de l'orange studio, en badge (transparent, texte et bordure). */
 .ar-button--update {
+    background-color: var(--ar-transparent);
+    border-width: 1px;
     border-color: var(--ar-orange);
+    border-radius: var(--ar-radius-pill);
     color: var(--ar-orange);
 }
 .ar-button--update:hover {
     background-color: var(--ar-orange);
-    border-color: var(--ar-orange);
     color: var(--ar-bg);
 }
 
-.ar-button-row {
-    flex-direction: row;
-}
-.ar-add-selection {
-    flex-shrink: 0;
-    margin: 0 0 10px 0;
+/* Desactive : reste LISIBLE (pas d'opacite), c'est l'etat de repos normal de Apply, Clear et
+   Revert tant qu'il n'y a rien a faire. Valeurs de Balance Forge. Exempte du contraste WCAG. */
+.ar-root .ar-button:disabled {
+    opacity: 1;
+    background-color: var(--ar-glass-3);
+    color: var(--ar-text-disabled);
 }
 
-/* ============ FOLDOUT AVANCE ============ */
+/* ============ FOLDOUT TRANSFORMATIONS ============ */
 .ar-advanced {
     margin-bottom: 0;
 }
-.ar-advanced .unity-foldout__text {
-    color: var(--ar-text-muted);
-    font-size: 13px;
+.ar-advanced > .unity-foldout__toggle {
+    margin-left: 0;
+}
+.ar-advanced .unity-foldout__checkmark {
+    -unity-background-image-tint-color: var(--ar-link);
+}
+.ar-advanced .unity-foldout__content {
+    margin-top: 6px;
 }
 .ar-advanced .unity-base-field {
     margin-bottom: 6px;
@@ -293,31 +352,29 @@
 }
 
 /* ============ ZONE DE DEPOT ============ */
+/* Verre, compacte. Le libelle identifie la zone ; pendant un glisser, contour accent-hover
+   (>= 3:1 contre le fond). */
 .ar-dropzone {
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    padding: 24px;
-    margin-bottom: 12px;
-    background-color: var(--ar-bg);
+    padding: 12px;
+    margin-bottom: 8px;
+    background-color: var(--ar-glass-1);
     border-width: 1px;
-    border-color: var(--ar-border-strong);
-    border-radius: 0;
+    border-color: var(--ar-glass-border);
+    border-radius: var(--ar-radius-list);
 }
-.ar-dropzone-icon {
-    width: 44px;
-    height: 44px;
-    margin-bottom: 10px;
-    border-width: 1px;
-    border-color: var(--ar-border);
-    border-radius: 0;
+.ar-dropzone--dragover {
+    border-color: var(--ar-accent-hover);
+    background-color: var(--ar-glass-3);
 }
 .ar-dropzone-label {
-    color: var(--ar-text-muted);
-    font-size: 14px;
+    color: var(--ar-text);
+    font-size: 13px;
 }
 .ar-dropzone-types {
-    margin-top: 6px;
+    margin-top: 2px;
     color: var(--ar-text-muted);
     font-size: 11px;
     -unity-text-align: middle-center;
@@ -332,94 +389,146 @@
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
-    margin-bottom: 8px;
+    margin: 4px 2px 6px 2px;
 }
+.ar-preview-head .ar-toggle {
+    margin-bottom: 0;
+}
+
+/* Pastille compteur : style des badges de Balance Forge, sans contour. */
 .ar-badge {
     min-width: 16px;
-    padding: 1px 7px;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 1px;
-    border-color: var(--ar-border);
-    border-radius: 0;
+    padding: 1px 6px;
+    background-color: var(--ar-glass-3);
+    border-radius: var(--ar-radius-pill);
     color: var(--ar-text);
     font-size: 11px;
     -unity-font-style: bold;
     -unity-text-align: middle-center;
 }
-.ar-preview-spacer {
-    flex-grow: 1;
-}
-.ar-preview-counts {
-    flex-direction: row;
-    font-size: 11px;
+.ar-preview-empty {
+    margin: 12px;
     color: var(--ar-text-muted);
-}
-.ar-preview-issues {
-    color: var(--ar-warning);
-    -unity-font-style: bold;
+    font-size: 12px;
 }
 
-/* ============ PREVIEW : LIGNES ============ */
+/* ============ PREVIEW : LIGNES (elements de liste Balance Forge) ============ */
+/* [case] ancien -> nouveau ................ [pastille statut] */
 .ar-row {
     flex-direction: row;
     align-items: center;
-    padding: 8px 10px;
-    margin-bottom: 8px;
-    background-color: var(--ar-surface);
+    margin: 4px 2px;
+    padding: 6px 8px;
+    background-color: var(--ar-glass-1);
     border-width: 1px;
-    border-color: var(--ar-border);
-    border-left-width: 3px;
-    border-radius: 0;
+    border-color: var(--ar-glass-border);
+    border-radius: var(--ar-radius-list);
 }
 .ar-row:hover {
-    background-color: var(--ar-surface-2);
+    background-color: var(--ar-glass-3);
 }
-.ar-row-toggle {
+.ar-root .ar-row-toggle {
+    flex-shrink: 0;
+    margin: 0 8px 0 0;
+}
+.ar-row-toggle-spacer {
+    width: 18px;
     flex-shrink: 0;
     margin-right: 8px;
 }
 .ar-row-content {
     flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
 }
 .ar-row-names {
-    color: var(--ar-text);
-    font-size: 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
 }
-.ar-row-status {
-    margin-top: 3px;
-    font-size: 11px;
-}
-
-/* Palette d'etats unique. La classe d'etat est posee sur la ligne : elle colore la barre de
-   gauche et le libelle de statut. Le mot du statut reste affiche, la couleur ne porte rien seule.
-   text-faint ne sert qu'aux barres (redondantes avec le mot), jamais au texte. Pas d'opacite sur
-   Excluded : elle ecrasait le contraste de toute la ligne. */
-.ar-row.ar-status--ok { border-left-color: var(--ar-success); }
-.ar-status--ok .ar-row-status { color: var(--ar-success); }
-
-.ar-row.ar-status--unchanged { border-left-color: var(--ar-text-faint); }
-.ar-status--unchanged .ar-row-status { color: var(--ar-text-muted); }
-
-.ar-row.ar-status--collision { border-left-color: var(--ar-warning); }
-.ar-status--collision .ar-row-status { color: var(--ar-warning); }
-
-.ar-row.ar-status--invalid { border-left-color: var(--ar-error); }
-.ar-status--invalid .ar-row-status { color: var(--ar-error-text); }
-
-.ar-row.ar-status--excluded { border-left-color: var(--ar-text-faint); }
-.ar-status--excluded .ar-row-names,
-.ar-status--excluded .ar-row-status { color: var(--ar-text-muted); }
-
-/* ============ RESULTAT / VERSION ============ */
-.ar-result {
-    margin-bottom: 6px;
+.ar-row-old {
     color: var(--ar-text-muted);
     font-size: 12px;
 }
-.ar-versionbar {
+.ar-row-arrow {
+    margin: 0 6px;
+    color: var(--ar-text-muted);
+    font-size: 12px;
+}
+.ar-row-new {
+    color: var(--ar-text);
+    font-size: 12px;
+    -unity-font-style: bold;
+}
+.ar-row-message {
+    margin-top: 2px;
+    color: var(--ar-text-muted);
+    font-size: 11px;
+}
+
+/* Pastille de statut : point colore + mot. Le mot porte l'information, la couleur la double. */
+.ar-pill {
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
+    margin-left: 8px;
+    padding: 1px 6px;
+    background-color: var(--ar-glass-3);
+    border-radius: var(--ar-radius-pill);
+}
+.ar-pill-dot {
+    width: 6px;
+    height: 6px;
+    margin-right: 5px;
+    border-radius: var(--ar-radius-dot);
+}
+.ar-pill-label {
+    font-size: 11px;
+    -unity-font-style: bold;
+}
+
+/* Palette d'etats unique, posee sur la ligne par une classe ar-status--*. */
+.ar-status--ok .ar-pill-dot { background-color: var(--ar-success); }
+.ar-status--ok .ar-pill-label { color: var(--ar-success); }
+
+.ar-status--unchanged .ar-pill-dot { background-color: var(--ar-text-muted); }
+.ar-status--unchanged .ar-pill-label { color: var(--ar-text-muted); }
+
+.ar-status--collision .ar-pill-dot { background-color: var(--ar-warning); }
+.ar-status--collision .ar-pill-label { color: var(--ar-warning); }
+
+.ar-status--invalid .ar-pill-dot { background-color: var(--ar-error-text); }
+.ar-status--invalid .ar-pill-label { color: var(--ar-error-text); }
+
+.ar-status--excluded .ar-pill-dot { background-color: var(--ar-text-muted); }
+.ar-status--excluded .ar-pill-label,
+.ar-status--excluded .ar-row-new { color: var(--ar-text-muted); }
+
+/* ============ PIED DE PAGE (marges Balance Forge) ============ */
+.ar-footer {
+    padding: 8px 4px 0px 4px;
+    flex-shrink: 0;
+}
+.ar-footer-row {
+    flex-direction: row;
+    align-items: center;
+}
+.ar-footer .ar-button {
+    margin: 0;
+}
+.ar-counts {
+    margin-right: 4px;
+    color: var(--ar-text-muted);
+    font-size: 11px;
+}
+.ar-counts--issues {
+    color: var(--ar-warning);
+    -unity-font-style: bold;
+}
+.ar-result {
+    margin-top: 4px;
+    color: var(--ar-text-muted);
+    font-size: 12px;
 }
 .ar-version-label {
     margin-right: 8px;

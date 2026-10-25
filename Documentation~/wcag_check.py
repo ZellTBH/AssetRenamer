@@ -1,76 +1,127 @@
 """Controle WCAG 2.2 AA du theme Asset Renamer.
 
-Lit les tokens --ar-* directement dans le USS (source unique), puis calcule le ratio de
-contraste de chaque paire couleur / fond utilisee. Usage :
+Lit les tokens --ar-* directement dans le USS (source unique). Une couleur rgba n'a pas de ratio
+en soi : chaque fond est donc decrit comme une PILE de calques, du plus profond au plus haut
+(ex. ["bg", "glass-2", "glass-3"] = bouton sur une section vitree sur le fond de la fenetre).
+La pile est composee (alpha over) en une couleur opaque, puis le premier plan, s'il est
+translucide, est compose a son tour sur ce resultat avant le calcul du ratio.
+
+Usage :
     python wcag_check.py <chemin vers AssetRenamerTheme.uss>
 Code de sortie 1 si une paire non exemptee echoue.
 """
 import re
 import sys
 
-TEXT, LARGE, UI, EXEMPT = 4.5, 3.0, 3.0, None
+TEXT, UI, EXEMPT = 4.5, 3.0, None
 
-# (premier plan, fond, usage, seuil). Les fonds sont ceux reellement sous l'element :
-# bg = contenu de la fenetre et fond des champs, surface = groupes et lignes,
-# surface-2 = ligne survolee, ligne d'aide active, bouton presse.
+# Piles de fonds reellement utilisees par la fenetre.
+BG = ["bg"]                                       # fond de la fenetre, preview, pied de page
+SECTION = ["bg", "glass-2"]                       # header, barre d'outils, sections
+BUTTON = ["bg", "glass-2", "glass-3"]             # bouton secondaire au repos ou desactive
+BUTTON_HOVER = ["bg", "glass-2", "accent-glass"]  # bouton secondaire ou '?' au survol
+PRIMARY = ["bg", "glass-2", "accent-85"]          # Apply au repos, secondaire presse
+PRIMARY_HOVER = ["bg", "glass-2", "accent"]       # Apply au survol
+HELP_PANEL = ["bg", "glass-2", "glass-1"]         # panneau d'aide dans sa section
+HELP_ACTIVE = ["bg", "glass-2", "glass-1", "accent-glass"]
+ROW = ["bg", "glass-1"]                           # ligne de preview, zone de depot
+ROW_HOVER = ["bg", "glass-3"]                     # ligne survolee, zone de depot en glisser
+PILL = ["bg", "glass-1", "glass-3"]               # pastille de statut dans une ligne
+PILL_HOVER = ["bg", "glass-3", "glass-3"]         # pastille dans une ligne survolee
+BADGE = ["bg", "glass-3"]                         # pastille compteur PREVIEW
+FIELD = ["bg"]                                    # interieur des champs et des cases (--ar-bg)
+
+# (premier plan, pile de fond, usage, seuil)
 PAIRS = [
-    # Texte courant
-    ("text", "bg", "texte par defaut, etat vide de la preview", TEXT),
-    ("text", "bg", "texte saisi dans les champs (fond --ar-bg)", TEXT),
-    ("text", "surface", "libelles des toggles, noms dans les lignes", TEXT),
-    ("text", "surface-2", "noms dans une ligne survolee", TEXT),
-    ("text", "bg", "exemple du panneau d'aide, badge compteur", TEXT),
-    ("text", "surface-2", "exemple sur la ligne d'aide active", TEXT),
-    ("text-muted", "surface", "libelles des champs, foldout, '?' au repos", TEXT),
-    ("text-muted", "bg", "boutons secondaires au repos (zone contenu), compteurs, resultat, version, zone de depot", TEXT),
-    ("text-muted", "surface-2", "boutons secondaires presses, nom sur ligne d'aide active", TEXT),
-    # Titres et liens
-    ("link", "surface", "titres de section dans les groupes", TEXT),
-    ("link", "bg", "titre PREVIEW, '?' et secondaires au survol (zone contenu)", TEXT),
-    ("link", "surface-2", "secondaires au survol puis presses", TEXT),
-    # Bouton primaire et badge update
-    ("on-accent", "accent", "texte Apply au repos, coche des cases", TEXT),
-    ("on-accent", "accent-hover", "texte Apply au survol", TEXT),
-    ("orange", "bg", "texte du badge Update available", TEXT),
-    ("bg", "orange", "texte du badge Update au survol", TEXT),
-    # Statuts en texte (lignes sur surface, survol surface-2)
-    ("success", "surface", "statut Ok", TEXT),
-    ("success", "surface-2", "statut Ok, ligne survolee", TEXT),
-    ("text-muted", "surface", "statuts Unchanged et Excluded", TEXT),
-    ("text-muted", "surface-2", "statuts Unchanged et Excluded, ligne survolee", TEXT),
-    ("warning", "surface", "statut Collision, avertissement table manquante", TEXT),
-    ("warning", "surface-2", "statut Collision, ligne survolee", TEXT),
-    ("warning", "bg", "compteur d'issues", TEXT),
-    ("error-text", "surface", "statut Invalid", TEXT),
-    ("error-text", "surface-2", "statut Invalid, ligne survolee", TEXT),
-    # Composants interactifs (contours) contre le fond adjacent
-    ("border-strong", "bg", "contour des champs (fond interieur) et secondaires sur le contenu", UI),
-    ("border-strong", "surface", "contour des champs, cases, '?' et secondaires dans un groupe", UI),
-    ("border-strong", "surface-2", "contour des cases dans une ligne survolee", UI),
-    ("border-strong", "bg", "contour de la zone de depot", UI),
-    ("accent-hover", "bg", "indicateur de focus contre le fond du champ", UI),
-    ("accent-hover", "surface", "indicateur de focus contre la surface du groupe", UI),
-    ("link", "bg", "contour des secondaires et du '?' au survol", UI),
-    ("link", "surface", "contour des secondaires et du '?' au survol dans un groupe", UI),
-    ("accent", "bg", "fond du bouton Apply contre le contenu", UI),
-    ("orange", "bg", "contour du badge Update", UI),
-    # Indicateurs d'etat non textuels
-    ("success", "surface", "barre de statut Ok", UI),
-    ("warning", "surface", "barre de statut Collision", UI),
-    ("error", "surface", "barre de statut Invalid", UI),
-    ("error", "surface-2", "barre de statut Invalid, ligne survolee", UI),
-    ("link", "surface-2", "barre de la ligne d'aide active", UI),
-    # Exemptions (decoratif, redondant avec le texte, ou desactive)
-    ("text-faint", "surface", "barres Unchanged / Excluded : le mot du statut porte l'information", EXEMPT),
-    ("border", "surface", "bordures des groupes et des lignes : decoratif", EXEMPT),
-    ("border", "bg", "bordure du badge compteur, cadre de l'icone de depot : decoratif", EXEMPT),
-    ("accent", "surface", "fond d'une case cochee : l'etat est porte par la coche (on-accent) et le contour border-strong", EXEMPT),
+    # Texte
+    ("text", SECTION, "titre du header, toggles et texte des sections", TEXT),
+    ("text-muted", SECTION, "libelles des champs", TEXT),
+    ("link", SECTION, "titres de section, en-tete TRANSFORMATIONS", TEXT),
+    ("link", BG, "titre PREVIEW", TEXT),
+    ("warning", SECTION, "avertissement table manquante", TEXT),
+    ("text", FIELD, "texte saisi dans les champs", TEXT),
+    ("text", BUTTON, "boutons secondaires et '?' au repos", TEXT),
+    ("text", BUTTON_HOVER, "boutons secondaires et '?' au survol", TEXT),
+    ("on-accent", PRIMARY, "Apply au repos, secondaire presse", TEXT),
+    ("on-accent", PRIMARY_HOVER, "Apply au survol et presse", TEXT),
+    ("text-muted", HELP_PANEL, "noms du panneau d'aide", TEXT),
+    ("text", HELP_PANEL, "exemples du panneau d'aide", TEXT),
+    ("text", HELP_ACTIVE, "nom et exemple de la convention active", TEXT),
+    ("text", ROW, "zone de depot : libelle", TEXT),
+    ("text-muted", ROW, "zone de depot : types", TEXT),
+    ("text", ROW_HOVER, "zone de depot pendant un glisser : libelle", TEXT),
+    ("text-muted", ROW_HOVER, "zone de depot pendant un glisser : types", TEXT),
+    ("text", BG, "toggle Hide unchanged", TEXT),
+    ("text", BADGE, "pastille compteur PREVIEW", TEXT),
+    ("text-muted", BG, "preview vide, compteurs, resultat, version", TEXT),
+    ("warning", BG, "compteur d'issues", TEXT),
+    ("orange", BG, "badge Update available", TEXT),
+    ("bg", ["bg", "orange"], "badge Update au survol", TEXT),
+    ("text", ROW, "nouveau nom (ligne)", TEXT),
+    ("text", ROW_HOVER, "nouveau nom (ligne survolee)", TEXT),
+    ("text-muted", ROW, "ancien nom, fleche, message, nouveau nom Excluded", TEXT),
+    ("text-muted", ROW_HOVER, "idem, ligne survolee", TEXT),
+    ("success", PILL, "pastille Ok", TEXT),
+    ("success", PILL_HOVER, "pastille Ok, ligne survolee", TEXT),
+    ("text-muted", PILL, "pastilles Unchanged et Excluded", TEXT),
+    ("text-muted", PILL_HOVER, "pastilles Unchanged et Excluded, ligne survolee", TEXT),
+    ("warning", PILL, "pastille Collision", TEXT),
+    ("warning", PILL_HOVER, "pastille Collision, ligne survolee", TEXT),
+    ("error-text", PILL, "pastille Invalid", TEXT),
+    ("error-text", PILL_HOVER, "pastille Invalid, ligne survolee", TEXT),
+    # Limites des composants a saisie, contre le fond reel des deux cotes
+    ("border-strong", SECTION, "cadre des champs, listes, ObjectField et cases dans une section", UI),
+    ("border-strong", FIELD, "cadre des champs et des cases contre leur interieur", UI),
+    ("border-strong", ROW, "cadre des cases d'exclusion dans une ligne", UI),
+    ("border-strong", ROW_HOVER, "cadre des cases d'exclusion, ligne survolee", UI),
+    ("border-strong", BG, "cadre de la case Hide unchanged", UI),
+    ("accent-hover", SECTION, "focus d'un champ contre la section", UI),
+    ("accent-hover", FIELD, "focus d'un champ contre son interieur", UI),
+    ("accent-hover", BG, "contour de la zone de depot pendant un glisser, cote fenetre", UI),
+    ("accent-hover", ROW_HOVER, "contour de la zone de depot pendant un glisser, cote zone", UI),
+    ("orange", BG, "contour du badge Update", UI),
+    # Points de statut (doublent le mot) contre la pastille
+    ("success", PILL, "point Ok", UI),
+    ("warning", PILL, "point Collision", UI),
+    ("error-text", PILL, "point Invalid", UI),
+    ("text-muted", PILL, "points Unchanged et Excluded", UI),
+    ("error-text", PILL_HOVER, "point Invalid, ligne survolee", UI),
+    # Exemptions
+    ("glass-border", SECTION, "bordures vitrees des sections, lignes, zone de depot : decoratif", EXEMPT),
+    ("glass-3", SECTION, "fond des boutons secondaires : le texte identifie le bouton (1.4.11)", EXEMPT),
+    ("accent-85", SECTION, "fond d'Apply : le texte identifie le bouton (1.4.11)", EXEMPT),
+    ("accent", FIELD, "fond d'une case cochee : etat porte par la coche et le cadre border-strong", EXEMPT),
+    ("text-disabled", BUTTON, "texte des boutons desactives", EXEMPT),
+    ("glass-border", BG, "repos de la zone de depot : le libelle identifie la zone", EXEMPT),
 ]
 
 
-def luminance(hex_color):
-    channels = [int(hex_color[i:i + 2], 16) / 255 for i in (1, 3, 5)]
-    linear = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
+def parse_color(value):
+    value = value.strip()
+    if value.startswith("#"):
+        return tuple(int(value[i:i + 2], 16) for i in (1, 3, 5)) + (1.0,)
+    numbers = [float(n) for n in re.findall(r"[\d.]+", value)]
+    return (numbers[0], numbers[1], numbers[2], numbers[3] if len(numbers) > 3 else 1.0)
+
+
+def over(top, bottom):
+    alpha = top[3]
+    return tuple(top[i] * alpha + bottom[i] * (1 - alpha) for i in range(3)) + (1.0,)
+
+
+def flatten(stack, tokens):
+    result = tokens[stack[0]]
+    assert result[3] == 1.0, "the bottom of a stack must be opaque: " + stack[0]
+    for name in stack[1:]:
+        result = over(tokens[name], result)
+    return result
+
+
+def luminance(color):
+    linear = []
+    for channel in color[:3]:
+        c = channel / 255
+        linear.append(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4)
     return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
 
 
@@ -79,25 +130,32 @@ def ratio(a, b):
     return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
 
 
+def to_hex(color):
+    return "#%02X%02X%02X" % tuple(int(round(c)) for c in color[:3])
+
+
 def read_tokens(uss_path):
     text = open(uss_path, encoding="utf-8").read()
-    return {name: value.upper() for name, value in re.findall(r"--ar-([a-z0-9-]+):\s*(#[0-9A-Fa-f]{6})", text)}
+    found = re.findall(r"--ar-([a-z0-9-]+):\s*(#[0-9A-Fa-f]{6}|rgba?\([^)]*\))", text)
+    return {name: parse_color(value) for name, value in found}
 
 
 def main():
     tokens = read_tokens(sys.argv[1])
     failures = 0
-    print("| Premier plan | Fond | Usage | Ratio | Seuil | Resultat |")
-    print("|---|---|---|---|---|---|")
-    for fg, bg, usage, threshold in PAIRS:
-        value = ratio(tokens[fg], tokens[bg])
+    print("| Premier plan | Fond (pile) | Fond compose | Usage | Ratio | Seuil | Resultat |")
+    print("|---|---|---|---|---|---|---|")
+    for fg, stack, usage, threshold in PAIRS:
+        background = flatten(stack, tokens)
+        foreground = over(tokens[fg], background)
+        value = ratio(foreground, background)
         if threshold is None:
             verdict, shown = "exempt", "-"
         else:
             ok = value >= threshold
             failures += 0 if ok else 1
             verdict, shown = ("OK" if ok else "ECHEC"), "%.1f:1" % threshold
-        print("| %s `%s` | %s `%s` | %s | %.2f:1 | %s | %s |" % (fg, tokens[fg], bg, tokens[bg], usage, value, shown, verdict))
+        print("| %s | %s | %s | %s | %.2f:1 | %s | %s |" % (fg, " > ".join(stack), to_hex(background), usage, value, shown, verdict))
     print("\nEchecs hors exemptions : %d" % failures)
     sys.exit(1 if failures else 0)
 
