@@ -7,10 +7,10 @@ Editor tool to batch-rename project assets to a consistent naming convention. Bu
 Window > Package Manager > + > "Install package from git URL":
 
 ```
-https://github.com/ZellTBH/asset-renamer.git
+https://github.com/ZellTBH/AssetRenamer.git
 ```
 
-Pin a version by appending its tag to the URL, e.g. `#0.5.0`.
+Pin a version by appending its tag to the URL, e.g. `#0.5.1`.
 
 ## Usage
 

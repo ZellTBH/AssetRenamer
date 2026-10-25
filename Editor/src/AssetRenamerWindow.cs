@@ -746,8 +746,8 @@ namespace AssetRenamer.Editor
         private const string HIDDEN_CLASS = "ar-hidden";
         private const string TRANSFORM_TITLE = "TRANSFORMATIONS";
         private const string DEFAULT_TABLE_PATH = "Assets/AssetTypePrefixTable.asset";
-        private const string GIT_URL = "https://github.com/ZellTBH/asset-renamer.git";
-        private const string MANIFEST_URL = "https://raw.githubusercontent.com/ZellTBH/asset-renamer/main/package.json";
+        private const string GIT_URL = "https://github.com/ZellTBH/AssetRenamer.git";
+        private const string MANIFEST_URL = "https://raw.githubusercontent.com/ZellTBH/AssetRenamer/main/package.json";
         private static readonly List<string> HELP_SAMPLE = new List<string> { "wall", "torch" };
         private static readonly RenameStatus[] STATUS_ORDER =
         {

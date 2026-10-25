@@ -1,7 +1,7 @@
 # Asset Renamer - workflow
 
 ## Depots
-- Ce package est un depot git IMBRIQUE (remote ZellTBH/asset-renamer), embarque dans le projet
+- Ce package est un depot git IMBRIQUE (remote ZellTBH/AssetRenamer), embarque dans le projet
   hote de developpement, qui l'ignore via son .gitignore. Un commit fait a la racine hote
   n'attrape pas le package, et inversement.
 - L'arbre de travail du depot hote est sale en permanence (TutorialInfo, ProjectSettings, URP) :
