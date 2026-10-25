@@ -10,7 +10,7 @@ Window > Package Manager > + > "Install package from git URL":
 https://github.com/ZellTBH/AssetRenamer.git
 ```
 
-Pin a version by appending its tag to the URL, e.g. `#0.5.1`.
+Pin a version by appending its tag to the URL, e.g. `#0.5.2`.
 
 ## Usage
 
