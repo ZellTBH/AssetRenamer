@@ -5,7 +5,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.5.3] - 2026-10-25
 
 ### Changed
 - The README is rewritten and is now the only documentation of the package. Every fact in it is checked against the code: default prefixes, convention examples, preview statuses, the Update button and network access.
@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - The PDF quick guide (`Documentation~/AssetRenamer.pdf`): it showed the old interface and the old URL, and wrongly claimed the tool made no network access. The unused banner and icon art (`Documentation~/art/`) is removed with it.
+
+### Fixed
+- The Convention field has the theme style again (dark background, border-strong frame, rounded corners, accent frame on focus). It had lost it in 0.5.0 when the field rule was narrowed to stop framing the TRANSFORMATIONS foldout header: the enum field uses its own input class, which the narrowed rule did not list.
 
 ## [0.5.2] - 2026-10-25
 

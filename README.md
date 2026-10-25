@@ -32,7 +32,7 @@ https://github.com/ZellTBH/AssetRenamer.git
 To pin a version, append its tag. In `Packages/manifest.json`:
 
 ```json
-"com.tools.assetrenamer": "https://github.com/ZellTBH/AssetRenamer.git#0.5.2"
+"com.tools.assetrenamer": "https://github.com/ZellTBH/AssetRenamer.git#0.5.3"
 ```
 
 Note on the **Update available** button: it reinstalls the package from the plain git URL, without a tag. It installs whatever is at the head of `main` and removes the `#version` pin from your manifest. If you pin versions, update by editing the tag in the manifest instead.
