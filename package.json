@@ -6,7 +6,8 @@
   "description": "Editor tool to batch-rename project assets to a chosen naming convention, with optional name normalization and auto type prefixes. Built as a teaching aid for asset naming conventions.",
   "unity": "6000.0",
   "author": {
-    "name": "ZellTBH"
+    "name": "Breaking Frame",
+    "url": "https://breakingframe.studio"
   },
   "keywords": [
     "editor",
