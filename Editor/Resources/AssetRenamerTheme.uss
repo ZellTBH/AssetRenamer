@@ -158,11 +158,14 @@
     font-size: 12px;
 }
 
-/* Seuls les champs a saisie (texte, liste, objet) recoivent un cadre. La regle generique
+/* Seuls les champs a saisie (texte, liste, enum, objet) recoivent un cadre. La regle generique
    .unity-base-field__input attrapait aussi le toggle du foldout, d'ou le contour parasite sur
-   l'en-tete TRANSFORMATIONS. Cadre border-strong : un champ vide reste identifiable (>= 3:1). */
+   l'en-tete TRANSFORMATIONS. L'EnumField (Convention) ne derive pas de BasePopupField : son
+   entree porte .unity-enum-field__input, a lister a part. Cadre border-strong : un champ vide
+   reste identifiable (>= 3:1). */
 .ar-root .unity-base-text-field__input,
 .ar-root .unity-base-popup-field__input,
+.ar-root .unity-enum-field__input,
 .ar-root .unity-object-field__input {
     background-color: var(--ar-bg);
     border-width: 1px;
@@ -174,6 +177,7 @@
 /* Focus : accent-hover tient >= 3:1 contre le fond du champ et contre la section vitree. */
 .ar-root .unity-base-field:focus:enabled > .unity-base-text-field__input,
 .ar-root .unity-base-field:focus:enabled > .unity-base-popup-field__input,
+.ar-root .unity-base-field:focus:enabled > .unity-enum-field__input,
 .ar-root .unity-base-field:focus:enabled > .unity-object-field__input {
     border-color: var(--ar-accent-hover);
 }
