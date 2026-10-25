@@ -4,7 +4,7 @@
 
 Batch-rename Unity assets to a consistent naming convention from a single editor window.
 
-Because your files were named by a raccoon.
+*Because your files were named by a raccoon.*
 
 ## Features
 
@@ -35,9 +35,18 @@ To pin a version, append its tag. In `Packages/manifest.json`:
 "com.tools.assetrenamer": "https://github.com/ZellTBH/AssetRenamer.git#0.5.3"
 ```
 
-Note on the **Update available** button: it reinstalls the package from the plain git URL, without a tag. It installs whatever is at the head of `main` and removes the `#version` pin from your manifest. If you pin versions, update by editing the tag in the manifest instead.
+If you pin a version, see [Known limitations](#known-limitations) before using the **Update available** button.
 
 ## Usage
+
+### Quick start
+
+1. Open the window with **Breaking Frame > Asset Renamer**.
+2. Drag assets or folders from the Project window onto the drop zone.
+3. Check the preview: each row shows `old name -> new name` and a status.
+4. Click **Apply**.
+
+### Details
 
 Open the window with **Breaking Frame > Asset Renamer**.
 
@@ -73,7 +82,7 @@ The preview updates as soon as an option changes. Nothing is renamed until you c
 - **1 / 01 / 001**: the number is padded with zeros to at least that width (`tree1` -> `Tree01` with `01`). A longer number is never cut (`tree123` stays `Tree123` with `01`).
 - **Auto**: every number is padded to the widest one in the batch, so `1..15` becomes `01..15` and sorts correctly.
 
-When padding is on, the number is moved to the end of the name and joined with the convention's separator (`tree_01` in snake_case). It takes the last group of digits in the name, even in the middle: `rock2_big` becomes `RockBig02` with `01`.
+When padding is on, the number is moved to the end of the name and joined with the convention's separator (`tree_01` in snake_case).
 
 ### Normalize messy names
 
@@ -161,6 +170,11 @@ Example with the words `my asset name`:
 | Cobol Case | `MY-ASSET-NAME` |
 
 Names are split into words on underscores, hyphens, spaces and other symbols, and before a capital that starts a lowercase word (`playerController` -> `player controller`).
+
+## Known limitations
+
+- The **Update available** button reinstalls the package from the plain git URL, without a tag. It installs whatever is at the head of `main` and removes the `#version` pin from your manifest. If you pin versions, update by editing the tag in `Packages/manifest.json` instead.
+- With a number suffix other than Off, the last group of digits is taken even when it sits in the middle of the name, and moved to the end: `rock2_big` becomes `RockBig02` with `01`.
 
 ## Safety and notes
 
