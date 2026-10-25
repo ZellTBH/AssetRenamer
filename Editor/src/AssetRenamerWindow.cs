@@ -736,11 +736,7 @@ namespace AssetRenamer.Editor
 
         private void CreatePrefixTable()
         {
-            var table = CreateInstance<AssetTypePrefixTable>();
-            table.LoadDefaults();
-            AssetDatabase.CreateAsset(table, DEFAULT_TABLE_PATH);
-            AssetDatabase.SaveAssets();
-            _prefixTable = table;
+            _prefixTable = PrefixTableAssets.CreateOrLoad(DEFAULT_TABLE_PATH);
             Rebuild();
         }
 
