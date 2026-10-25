@@ -168,7 +168,6 @@ namespace AssetRenamer.Editor
         {
             var panel = new VisualElement();
             panel.AddToClassList("ar-panel");
-            panel.style.flexShrink = 0f;
 
             // ---- Format group ----
             var formatGroup = new VisualElement();
@@ -180,7 +179,7 @@ namespace AssetRenamer.Editor
             conventionRow.AddToClassList("ar-field-row");
 
             var conventionField = new EnumField("Convention", _convention);
-            conventionField.style.flexGrow = 1f;
+            conventionField.AddToClassList("ar-field-grow");
             conventionField.RegisterValueChangedCallback(evt => { _convention = (NamingConvention)evt.newValue; Recompute(); });
             conventionRow.Add(conventionField);
             ApplyTooltip(conventionField, "Casing style applied to each name. Click the ? to preview every style.");
@@ -371,8 +370,6 @@ namespace AssetRenamer.Editor
             var panel = new VisualElement();
             panel.AddToClassList("ar-panel");
             panel.AddToClassList("ar-preview");
-            panel.style.flexGrow = 1f;
-            panel.style.minHeight = 0;
 
             if (_paths.Count == 0)
             {
@@ -427,7 +424,6 @@ namespace AssetRenamer.Editor
 
             var counts = new VisualElement();
             counts.AddToClassList("ar-preview-counts");
-            counts.style.flexDirection = FlexDirection.Row;
 
             var renameLabel = new Label($"{toRename} to rename");
             counts.Add(renameLabel);
@@ -448,15 +444,7 @@ namespace AssetRenamer.Editor
         {
             var row = new VisualElement();
             row.AddToClassList("ar-row");
-
-            switch (plan.m_status)
-            {
-                case RenameStatus.Ok:        row.AddToClassList("ar-row--ok"); break;
-                case RenameStatus.Collision: row.AddToClassList("ar-row--collision"); break;
-                case RenameStatus.Invalid:   row.AddToClassList("ar-row--invalid"); break;
-                case RenameStatus.Excluded:  row.AddToClassList("ar-row--excluded"); break;
-                case RenameStatus.Unchanged: row.AddToClassList("ar-row--unchanged"); break;
-            }
+            ApplyStatusClass(row, plan.m_status);
 
             bool toggleable = plan.m_status == RenameStatus.Ok || plan.m_status == RenameStatus.Excluded;
             if (toggleable)
@@ -472,7 +460,6 @@ namespace AssetRenamer.Editor
                 });
                 row.Add(include);
             }
-            if (plan.m_status == RenameStatus.Excluded) row.style.opacity = 0.5f;
 
             var content = new VisualElement();
             content.AddToClassList("ar-row-content");
@@ -484,7 +471,6 @@ namespace AssetRenamer.Editor
             string detail = string.IsNullOrEmpty(plan.m_message) ? plan.m_status.ToString() : $"{plan.m_status}  -  {plan.m_message}";
             var status = new Label(detail);
             status.AddToClassList("ar-row-status");
-            status.style.color = StatusColor(plan.m_status);
             content.Add(status);
 
             row.Add(content);
@@ -534,7 +520,7 @@ namespace AssetRenamer.Editor
             {
                 var update = new Button(UpdateTool) { text = $"Update available: v{_latestVersion}" };
                 update.AddToClassList("ar-button");
-                update.AddToClassList("ar-button--primary");
+                update.AddToClassList("ar-button--update");
                 bar.Add(update);
             }
 
@@ -642,11 +628,7 @@ namespace AssetRenamer.Editor
         {
             var add = new Button(AddSelection) { text = "Add selection" };
             add.AddToClassList("ar-button");
-            add.style.flexShrink = 0f;
-            add.style.marginTop = 0f;
-            add.style.marginBottom = 10f;
-            add.style.marginLeft = 0f;
-            add.style.marginRight = 0f;
+            add.AddToClassList("ar-add-selection");
             ApplyTooltip(add, "Add the assets currently selected in the Project window. Folders are expanded to their contents.");
             return add;
         }
@@ -740,14 +722,24 @@ namespace AssetRenamer.Editor
             Rebuild();
         }
 
-        private static Color StatusColor(RenameStatus status) => status switch
+        /// <summary>
+        /// Pose la classe USS de l'etat et retire celles des autres etats : la couleur vient
+        /// uniquement de la palette du USS.
+        /// </summary>
+        private static void ApplyStatusClass(VisualElement element, RenameStatus status)
         {
-            RenameStatus.Ok => new Color(0.30f, 0.85f, 0.45f),
-            RenameStatus.Unchanged => new Color(0.55f, 0.55f, 0.60f),
-            RenameStatus.Collision => new Color(0.95f, 0.35f, 0.30f),
-            RenameStatus.Invalid => new Color(1f, 0.65f, 0.20f),
-            RenameStatus.Excluded => new Color(0.40f, 0.42f, 0.48f),
-            _ => Color.gray
+            for (int i = 0; i < STATUS_ORDER.Length; i++)
+                element.EnableInClassList(StatusClass(STATUS_ORDER[i]), enable: STATUS_ORDER[i] == status);
+        }
+
+        private static string StatusClass(RenameStatus status) => status switch
+        {
+            RenameStatus.Ok => "ar-status--ok",
+            RenameStatus.Unchanged => "ar-status--unchanged",
+            RenameStatus.Collision => "ar-status--collision",
+            RenameStatus.Invalid => "ar-status--invalid",
+            RenameStatus.Excluded => "ar-status--excluded",
+            _ => "ar-status--unchanged"
         };
 
         #endregion
@@ -755,12 +747,16 @@ namespace AssetRenamer.Editor
 
         #region Private and Protected
 
-        private const string STYLE_PATH = "Packages/com.tools.assetrenamer/Editor/src/AssetRenamerTheme.uss";
+        private const string STYLE_PATH = "Packages/com.tools.assetrenamer/Editor/Resources/AssetRenamerTheme.uss";
         private const float BANNER_MIN_WIDTH = 360f;
         private const string DEFAULT_TABLE_PATH = "Assets/AssetTypePrefixTable.asset";
         private const string GIT_URL = "https://github.com/ZellTBH/asset-renamer.git";
         private const string MANIFEST_URL = "https://raw.githubusercontent.com/ZellTBH/asset-renamer/main/package.json";
         private static readonly List<string> HELP_SAMPLE = new List<string> { "wall", "torch" };
+        private static readonly RenameStatus[] STATUS_ORDER =
+        {
+            RenameStatus.Ok, RenameStatus.Unchanged, RenameStatus.Collision, RenameStatus.Invalid, RenameStatus.Excluded
+        };
 
         [SerializeField] private NamingConvention _convention = NamingConvention.PascalCase;
         [SerializeField] private NumberPadding _numberPadding = NumberPadding.Off;
